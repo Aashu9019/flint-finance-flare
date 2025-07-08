@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -15,10 +16,22 @@ const ContactForm = () => {
     service: ''
   });
 
+  const [formProgress, setFormProgress] = useState(0);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Update progress based on filled fields
+    const newData = { ...formData, [field]: value };
+    const filledFields = Object.values(newData).filter(val => val.trim() !== '').length;
+    setFormProgress((filledFields / 4) * 100);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     toast.success("Thank you! We'll be in touch within 24 hours.");
     setFormData({ name: '', email: '', phone: '', service: '' });
+    setFormProgress(0);
   };
 
   return (
@@ -33,6 +46,16 @@ const ContactForm = () => {
               <p className="font-montserrat text-gray-600 text-lg mt-4">
                 Get your free consultation and discover how we can help you achieve your property goals.
               </p>
+              {formProgress > 0 && (
+                <div className="mt-4">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-montserrat text-sm font-semibold text-flint-coral">
+                      You're {Math.round((4 - (formProgress / 25)) * 25)}% away from expert advice
+                    </span>
+                  </div>
+                  <Progress value={formProgress} className="h-2" />
+                </div>
+              )}
             </CardHeader>
             <CardContent className="p-8">
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -45,7 +68,7 @@ const ContactForm = () => {
                       id="name"
                       type="text"
                       value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
                       className="mt-2 font-montserrat"
                       required
                     />
@@ -58,7 +81,7 @@ const ContactForm = () => {
                       id="phone"
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      onChange={(e) => handleInputChange('phone', e.target.value)}
                       className="mt-2 font-montserrat"
                       required
                     />
@@ -73,7 +96,7 @@ const ContactForm = () => {
                     id="email"
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
                     className="mt-2 font-montserrat"
                     required
                   />
@@ -81,9 +104,9 @@ const ContactForm = () => {
                 
                 <div>
                   <Label htmlFor="service" className="font-montserrat font-medium text-gray-700">
-                    What can we help you with? *
+                    Preferred Service *
                   </Label>
-                  <Select value={formData.service} onValueChange={(value) => setFormData({...formData, service: value})}>
+                  <Select value={formData.service} onValueChange={(value) => handleInputChange('service', value)}>
                     <SelectTrigger className="mt-2 font-montserrat">
                       <SelectValue placeholder="Select a service" />
                     </SelectTrigger>
@@ -93,6 +116,7 @@ const ContactForm = () => {
                       <SelectItem value="refinancing">Refinancing</SelectItem>
                       <SelectItem value="construction">Construction Loan</SelectItem>
                       <SelectItem value="commercial">Commercial Loan</SelectItem>
+                      <SelectItem value="borrowing-power">Check Borrowing Power</SelectItem>
                       <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
