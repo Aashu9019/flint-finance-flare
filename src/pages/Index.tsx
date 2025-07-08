@@ -1,4 +1,5 @@
 
+import Navigation from "@/components/Navigation";
 import HeroSection from "@/components/HeroSection";
 import SocialProofBar from "@/components/SocialProofBar";
 import CTASection from "@/components/CTASection";
@@ -24,6 +25,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen font-montserrat">
+      <Navigation />
       <HeroSection />
       <SocialProofBar />
       
